@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * The Universal Permissive License (UPL), Version 1.0
@@ -63,23 +63,7 @@ import com.oracle.truffle.api.object.Layout;
 import com.oracle.truffle.api.object.Shape;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.sl.SLLanguage;
-import com.oracle.truffle.sl.builtins.SLBuiltinNode;
-import com.oracle.truffle.sl.builtins.SLDefineFunctionBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLEvalBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLGetSizeBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLHasSizeBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLHelloEqualsWorldBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLImportBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLIsExecutableBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLIsNullBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLNanoTimeBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLNewObjectBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLPrintlnBuiltin;
-import com.oracle.truffle.sl.builtins.SLPrintlnBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLReadlnBuiltin;
-import com.oracle.truffle.sl.builtins.SLReadlnBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLStackTraceBuiltinFactory;
-import com.oracle.truffle.sl.builtins.SLWrapPrimitiveBuiltinFactory;
+import com.oracle.truffle.sl.builtins.*;
 import com.oracle.truffle.sl.nodes.SLExpressionNode;
 import com.oracle.truffle.sl.nodes.SLRootNode;
 import com.oracle.truffle.sl.nodes.local.SLReadArgumentNode;
@@ -174,6 +158,7 @@ public final class SLContext {
         installBuiltin(SLIsExecutableBuiltinFactory.getInstance());
         installBuiltin(SLIsNullBuiltinFactory.getInstance());
         installBuiltin(SLWrapPrimitiveBuiltinFactory.getInstance());
+        installBuiltin(SLSanitizeTaintStringBuiltinFactory.getInstance());
     }
 
     public void installBuiltin(NodeFactory<? extends SLBuiltinNode> factory) {

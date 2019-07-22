@@ -1,0 +1,4 @@
+Enter a string: 
+Read tainted input from stdin
+Sanitized it
+my dog ate my homework

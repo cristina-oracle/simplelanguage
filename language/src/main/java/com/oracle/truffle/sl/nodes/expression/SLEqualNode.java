@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * The Universal Permissive License (UPL), Version 1.0
@@ -50,6 +50,7 @@ import com.oracle.truffle.sl.nodes.SLBinaryNode;
 import com.oracle.truffle.sl.runtime.SLBigNumber;
 import com.oracle.truffle.sl.runtime.SLFunction;
 import com.oracle.truffle.sl.runtime.SLNull;
+import com.oracle.truffle.sl.runtime.SLTaintString;
 
 /**
  * The {@code ==} operator of SL is defined on all types. Therefore, we need a
@@ -78,6 +79,14 @@ public abstract class SLEqualNode extends SLBinaryNode {
     @Specialization
     protected boolean equal(boolean left, boolean right) {
         return left == right;
+    }
+
+    /**
+     * Specialization to determine if two tainted strings are equal.
+     */
+    @Specialization
+    protected boolean equal (SLTaintString left, SLTaintString right) {
+        return left.getValue().equals(right.getValue());
     }
 
     @Specialization

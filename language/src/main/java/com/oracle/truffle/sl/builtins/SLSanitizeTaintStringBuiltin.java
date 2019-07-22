@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * The Universal Permissive License (UPL), Version 1.0
@@ -38,48 +38,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package com.oracle.truffle.sl.builtins;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-
-import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
-import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.NodeInfo;
-import com.oracle.truffle.sl.SLException;
-import com.oracle.truffle.sl.SLLanguage;
-import com.oracle.truffle.sl.runtime.SLContext;
 import com.oracle.truffle.sl.runtime.SLTaintString;
 
-/**
- * Builtin function that reads a String from the {@link SLContext#getInput() standard input}.
- * By default, anything read from standard input is tainted.
- * NB: a null SLTaintString is represented by the empty string "".
+/** Class to implement a builtin for sanitization of SLTaintStrings.
+ *  For now, only one sanitize method that untaints an SLTaintString without taking into account type of vulnerability.
  */
-@NodeInfo(shortName = "readln")
-public abstract class SLReadlnBuiltin extends SLBuiltinNode {
-
+@NodeInfo(shortName = "sanitize")
+public abstract class SLSanitizeTaintStringBuiltin extends SLBuiltinNode {
+    /**
+     * Empty method for now that returns untainted string.
+     *
+     * @param tstr: tainted string
+     * @return untainted string
+     */
     @Specialization
-    public SLTaintString readln(@CachedContext(SLLanguage.class) SLContext context) {
-        String result = doRead(context.getInput());
-        if (result == null) {
-            /*
-             * We do not have a sophisticated end of file handling, so returning an empty string is
-             * a reasonable alternative. Note that the Java null value should never be used, since
-             * it can interfere with the specialization logic in generated source code.
-             */
-            result = "";
-        }
-        return new SLTaintString(result);
+    public String sanitize (SLTaintString tstr) {
+        return tstr.getValue();
     }
 
-    @TruffleBoundary
-    private String doRead(BufferedReader in) {
-        try {
-            return in.readLine();
-        } catch (IOException ex) {
-            throw new SLException(ex.getMessage(), this);
-        }
-    }
 }

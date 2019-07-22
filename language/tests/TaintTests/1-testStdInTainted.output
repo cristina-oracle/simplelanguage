@@ -1,0 +1,3 @@
+Enter a string 
+Read tainted input from stdin
+Aborting program: cannot write tainted string 

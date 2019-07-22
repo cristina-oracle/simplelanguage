@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * The Universal Permissive License (UPL), Version 1.0
@@ -46,8 +46,10 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.NodeInfo;
+import com.oracle.truffle.sl.SLException;
 import com.oracle.truffle.sl.SLLanguage;
 import com.oracle.truffle.sl.runtime.SLContext;
+import com.oracle.truffle.sl.runtime.SLTaintString;
 
 /**
  * Builtin function to write a value to the {@link SLContext#getOutput() standard output}. The
@@ -92,6 +94,19 @@ public abstract class SLPrintlnBuiltin extends SLBuiltinNode {
     @TruffleBoundary
     private static void doPrint(PrintWriter out, String value) {
         out.println(value);
+    }
+
+    /**
+     * Method to print a tainted string.  No tainted value is allowed to be printed to standard out,
+     * as such, this method throws an exception and aborts program execution.
+     *
+     * @param tstr: the tainted string
+     * @param context: the context
+     * @return: doesn't return anything, instead, the method throws an exception and aborts the program.
+     */
+    @Specialization
+    public String println (SLTaintString tstr, @CachedContext(SLLanguage.class) SLContext context) {
+        throw new SLException ("Aborting program: cannot write tainted string ", this);
     }
 
     @Specialization

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * The Universal Permissive License (UPL), Version 1.0
@@ -49,6 +49,7 @@ import com.oracle.truffle.sl.SLException;
 import com.oracle.truffle.sl.nodes.SLBinaryNode;
 import com.oracle.truffle.sl.nodes.SLTypes;
 import com.oracle.truffle.sl.runtime.SLBigNumber;
+import com.oracle.truffle.sl.runtime.SLTaintString;
 
 /**
  * SL node that performs the "+" operation, which performs addition on arbitrary precision numbers,
@@ -99,6 +100,27 @@ public abstract class SLAddNode extends SLBinaryNode {
     @TruffleBoundary
     protected SLBigNumber add(SLBigNumber left, SLBigNumber right) {
         return new SLBigNumber(left.getValue().add(right.getValue()));
+    }
+
+    /**
+     * Specialization for SLTaintString concatenation.  SLTaintString concatenation works
+     * when both operands are SLTaintString, or one is an SLTaintString and the other is
+     * a String.  Concatenating any String to a tainted string always returns a tainted string.
+     */
+    @Specialization
+    @TruffleBoundary
+    protected SLTaintString add (SLTaintString tstr1, SLTaintString tstr2) {
+        return new SLTaintString (tstr1.getValue() + tstr2.getValue());
+    }
+
+    @TruffleBoundary
+    protected SLTaintString add (SLTaintString tstr1, String str2) {
+        return new SLTaintString (tstr1.getValue() + str2);
+    }
+
+    @TruffleBoundary
+    protected SLTaintString add (String str1, SLTaintString tstr2) {
+        return new SLTaintString (str1 + tstr2.getValue());
     }
 
     /**
