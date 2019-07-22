@@ -113,11 +113,13 @@ public abstract class SLAddNode extends SLBinaryNode {
         return new SLTaintString (tstr1.getValue() + tstr2.getValue());
     }
 
+    @Specialization
     @TruffleBoundary
     protected SLTaintString add (SLTaintString tstr1, String str2) {
         return new SLTaintString (tstr1.getValue() + str2);
     }
 
+    @Specialization
     @TruffleBoundary
     protected SLTaintString add (String str1, SLTaintString tstr2) {
         return new SLTaintString (str1 + tstr2.getValue());
